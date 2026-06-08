@@ -44,6 +44,7 @@ int main(){
 
     // vector<thread> RPSthreads; //Threads cannot store structs, replace with vector of futures
     vector<future<PlayerMove>> RPSFutures;
+    vector<PlayerMove> PlayersMoves; //vector of struct PlayerMove
 
     for(int i = 0; i < totalPlayers; i++){
         // RPSthreads.push_back(thread(Player, i));
@@ -53,8 +54,16 @@ int main(){
     for(int i = 0; i < totalPlayers; i++){
         // RPSthreads[i].join();
         PlayerMove result = RPSFutures[i].get();
+        PlayersMoves.push_back(result);
         cout << "Pid : " << result.Pid << " -> " << "Move : " << result.move <<  endl;
     }
+
+    
+    cout << "Struct PlayersMoves : " << endl;
+    for (const auto& player : PlayersMoves) {
+        cout << "Player ID: " << player.Pid << " -> " << " Move : " << player.move << endl;
+    }
+
 
     return 0;
 }
