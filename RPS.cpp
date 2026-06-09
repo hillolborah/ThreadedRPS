@@ -4,13 +4,14 @@
 #include <random>
 #include <vector>
 #include <future>
+#include <algorithm>
 
 using namespace std;
 
 mutex mu1; //mutex for rng engine -> move
 
 struct PlayerMove{
-    int Pid; //PlayerId
+    const int Pid; //PlayerId
     char move; //moves R(Rock) | P(Paper) | S(Scissor)
 };
 
@@ -34,7 +35,34 @@ PlayerMove Player(int Pid){
 
 }
 
+//Moderator function -> takes in PlayersMoves, match making and deterministic logic
+//MatchMaking function -> line 52 and line 57 loop made into a callable function
 
+void Mod(vector<PlayerMove> Players){
+    cout << "Struct PlayersMoves : " << endl;
+    // for (const auto& player : Players) {
+    //     cout << "Player ID: " << player.Pid << " -> " << " Move : " << player.move << endl;
+    // }
+
+    if(Players.empty()) return;
+
+    vector<size_t> idx_vect(Players.size());
+    for(size_t i = 0; i < idx_vect.size(); i++){
+        idx_vect[i] = i;
+    }
+
+    static random_device rd;
+    static mt19937 gen(rd());
+    shuffle(idx_vect.begin(), idx_vect.end(), gen);
+
+
+    for(size_t randIdx : idx_vect){
+        const auto& player = Players[randIdx];
+        cout << "Pid : " << player.Pid << " -> Move : " << player.move << endl;
+    }
+
+
+}
 
 int main(){
 
@@ -58,12 +86,7 @@ int main(){
         cout << "Pid : " << result.Pid << " -> " << "Move : " << result.move <<  endl;
     }
 
-    
-    cout << "Struct PlayersMoves : " << endl;
-    for (const auto& player : PlayersMoves) {
-        cout << "Player ID: " << player.Pid << " -> " << " Move : " << player.move << endl;
-    }
-
+    Mod(PlayersMoves);
 
     return 0;
 }
