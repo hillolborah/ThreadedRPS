@@ -39,14 +39,21 @@ int Fight(char m1, char m2){//0->draw 1->m1 2->m2
 }
 
 void Mod(vector<PlayerMove> Players){
-    cout << "Struct PlayersMoves : " << endl;
+    cout << "Mod function" << endl;
     // for (const auto& player : Players) {
     //     cout << "Player ID: " << player.Pid << " -> " << " Move : " << player.move << endl;
     // }
 
-    if(Players.empty()) return;
-
     vector<size_t> idx_vect(Players.size());
+    vector<PlayerMove> NextPass;
+
+
+    if(Players.empty()) return;
+    if (Players.size() == 1) {
+        cout << "Winner Pid : " << Players[0].Pid << endl;
+        return;
+    }
+
     for(size_t i = 0; i < idx_vect.size(); i++){
         idx_vect[i] = i;
     }
@@ -56,9 +63,40 @@ void Mod(vector<PlayerMove> Players){
     shuffle(idx_vect.begin(), idx_vect.end(), gen);
 
 
-    for(size_t randIdx : idx_vect){
-        const auto& player = Players[randIdx];
-        cout << "Pid : " << player.Pid << " -> Move : " << player.move << endl;
+    // for(size_t randIdx : idx_vect){
+    //     const auto& player = Players[randIdx];
+    //     cout << "Pid : " << player.Pid << " -> Move : " << player.move << endl;
+    // }
+
+
+    for(size_t i = 0; i < idx_vect.size(); i+=2){//iterative +2, match two consecutive players from the vector
+        if(i+1 >= idx_vect.size()){
+            const auto& OddBall = Players[idx_vect[i]];
+            cout << "Last  player odd : " << OddBall.Pid << endl;
+            NextPass.push_back(OddBall);
+            break;
+        }
+
+        PlayerMove p1 = Players[idx_vect[i]];
+        PlayerMove p2 = Players[idx_vect[i+1]];
+        cout << "Pid : " << p1.Pid << " vs " << "Pid : " << p2.Pid << endl;
+
+        int result = Fight(p1.move, p2.move);
+
+        if(result == 0){ //ToDo: update logic to send both to NextPass?
+            cout << "Draw" << endl;
+            idx_vect.push_back(idx_vect[i]);
+            idx_vect.push_back(idx_vect[i+1]);
+        }else if(result == 1){
+            cout << "Winner : Pid " << p1.Pid << endl;
+            NextPass.push_back(p1);
+        }else{
+            cout << "Winner : Pid " << p2.Pid << endl;
+            NextPass.push_back(p2);
+        }
+
+        Mod(NextPass); //recursive matches
+
     }
 
 
@@ -68,7 +106,7 @@ int main(){
 
     cout << "Main Thread" << endl;
 
-    const int totalPlayers = 10;
+    const int totalPlayers = 1;
 
     // vector<thread> RPSthreads; //Threads cannot store structs, replace with vector of futures
     vector<future<PlayerMove>> RPSFutures;
