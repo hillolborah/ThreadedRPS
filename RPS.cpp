@@ -87,6 +87,8 @@ void Mod(vector<PlayerMove> Players){
             cout << "Draw" << endl;
             // idx_vect.push_back(idx_vect[i]);
             // idx_vect.push_back(idx_vect[i+1]);
+            NextPass.push_back(p1);
+            NextPass.push_back(p2);
         }else if(result == 1){
             cout << "Winner : Pid " << p1.Pid << endl;
             NextPass.push_back(p1);
