@@ -8,7 +8,6 @@
 
 using namespace std;
 
-mutex mu1; //mutex for rng engine -> move
 
 struct PlayerMove{
     const int Pid; //PlayerId
@@ -19,24 +18,25 @@ PlayerMove Player(int Pid){
 
     char moves[] = {'R', 'P', 'S'};
 
-    static random_device rd;
-    static mt19937 gen(rd());
+    thread_local random_device rd;
+    thread_local mt19937 gen(rd());
     uniform_int_distribution<> uni_dist(0, 2);
 
-    char move;
-
-    {
-        lock_guard<mutex> lock(mu1);
-        move = moves[uni_dist(gen)];
-        cout << "PlayerId : " << Pid << " -> " << "Move : " << move << endl;
-    }
+    char move = moves[uni_dist(gen)];
 
     return PlayerMove{Pid, move};
 
 }
 
 //Moderator function -> takes in PlayersMoves, match making and deterministic logic
-//MatchMaking function -> line 52 and line 57 loop made into a callable function
+
+int Fight(char m1, char m2){//0->draw 1->m1 2->m2
+    if (m1 == m2) return 0;
+    if((m1 == 'R' && m2 == 'S') || (m1 == 'P' && m2 == 'R') || (m1 == 'S' && m2 == 'P')){
+        return 1;
+    }
+    return 2;
+}
 
 void Mod(vector<PlayerMove> Players){
     cout << "Struct PlayersMoves : " << endl;
@@ -83,7 +83,7 @@ int main(){
         // RPSthreads[i].join();
         PlayerMove result = RPSFutures[i].get();
         PlayersMoves.push_back(result);
-        cout << "Pid : " << result.Pid << " -> " << "Move : " << result.move <<  endl;
+        // cout << "Pid : " << result.Pid << " -> " << "Move : " << result.move <<  endl;
     }
 
     Mod(PlayersMoves);
