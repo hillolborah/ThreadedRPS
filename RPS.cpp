@@ -28,7 +28,6 @@ PlayerMove Player(int Pid){
 
 }
 
-//Moderator function -> takes in PlayersMoves, match making and deterministic logic
 
 int Fight(char m1, char m2){//0->draw 1->m1 2->m2
     if (m1 == m2) return 0;
@@ -38,7 +37,7 @@ int Fight(char m1, char m2){//0->draw 1->m1 2->m2
     return 2;
 }
 
-void Mod(vector<PlayerMove> Players){
+void Mod(vector<PlayerMove> Players){ //Moderator function -> takes in PlayersMoves, match making and deterministic logic for win, loose, draw
     cout << "Mod function" << endl;
     // for (const auto& player : Players) {
     //     cout << "Player ID: " << player.Pid << " -> " << " Move : " << player.move << endl;
@@ -97,13 +96,14 @@ void Mod(vector<PlayerMove> Players){
             NextPass.push_back(p2);
         }
 
-        // Mod(NextPass); //recursive matches
-
     }
 
+    cout << "vector<PlayerMove> NextPass :" << endl;
     for (const auto& player : NextPass) {
         cout << "Player ID: " << player.Pid << endl;
     }
+
+    // Mod(NextPass); //recursive matches
 
 }
 
@@ -117,7 +117,7 @@ int main(){
     vector<future<PlayerMove>> RPSFutures;
     vector<PlayerMove> PlayersMoves; //vector of struct PlayerMove
 
-    for(int i = 0; i < totalPlayers; i++){
+    for(int i = 0; i < totalPlayers; i++){ //write callable function with Moderator function
         // RPSthreads.push_back(thread(Player, i));
         RPSFutures.push_back(async(launch::async, Player, i));
     }
@@ -130,6 +130,9 @@ int main(){
     }
 
     Mod(PlayersMoves);
+
+
+
 
     cout << "End" << endl;
 
